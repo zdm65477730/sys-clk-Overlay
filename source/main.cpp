@@ -9,13 +9,13 @@ class GuiMain : public tsl::Gui
 public:
     virtual tsl::elm::Element *createUI() override
     {
-        tsl::elm::OverlayFrame *rootFrame = new tsl::elm::OverlayFrame("sys-clk Overlay", "Choclate Chip Flavor");
+        tsl::elm::OverlayFrame *rootFrame = new tsl::elm::OverlayFrame("sys-clk Overlay", VERSION);
         ClkState state = Utils::clk::getClkState();
         if ((int)state < 0)
         {
             tsl::elm::CustomDrawer *warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *render, u16 x, u16 y, u16 w, u16 h) {
                 render->drawString("\uE150", false, 180, 250, 90, a(0xFFFF));
-                render->drawString("Could not load sys-clk!", false, 110, 340, 25, a(0xFFFF));
+                render->drawString("无法加载sys-clk！", false, 110, 340, 25, a(0xFFFF));
             });
 
             rootFrame->setContent(warning);
@@ -28,27 +28,27 @@ public:
         ToggleClkItem->setStateChangedListener(Utils::clk::ToggleClkModule);
         clkList->addItem(ToggleClkItem);
 
-        ClkConfigListItem *DockedCPU = new ClkConfigListItem("Docked CPU Clock", CPUClocks, "docked_cpu");
+        ClkConfigListItem *DockedCPU = new ClkConfigListItem("底座模式CPU时钟", CPUClocks, "docked_cpu");
         clkList->addItem(DockedCPU);
         ConfigItems.push_back(DockedCPU);
 
-        ClkConfigListItem *DockedGPU = new ClkConfigListItem("Docked GPU Clock", GPUClocks, "docked_gpu");
+        ClkConfigListItem *DockedGPU = new ClkConfigListItem("底座模式GPU时钟", GPUClocks, "docked_gpu");
         clkList->addItem(DockedGPU);
         ConfigItems.push_back(DockedGPU);
 
-        ClkConfigListItem *DockedMEM = new ClkConfigListItem("Docked MEM Clock", MEMClocks, "docked_mem");
+        ClkConfigListItem *DockedMEM = new ClkConfigListItem("底座模式内存时钟", MEMClocks, "docked_mem");
         clkList->addItem(DockedMEM);
         ConfigItems.push_back(DockedMEM);
 
-        ClkConfigListItem *HandheldCPU = new ClkConfigListItem("Handheld CPU Clock", CPUClocks, "handheld_cpu");
+        ClkConfigListItem *HandheldCPU = new ClkConfigListItem("掌机模式CPU时钟", CPUClocks, "handheld_cpu");
         clkList->addItem(HandheldCPU);
         ConfigItems.push_back(HandheldCPU);
 
-        ClkConfigListItem *HandheldGPU = new ClkConfigListItem("Handheld GPU Clock", GPUClocks, "handheld_gpu");
+        ClkConfigListItem *HandheldGPU = new ClkConfigListItem("掌机模式GPU时钟", GPUClocks, "handheld_gpu");
         clkList->addItem(HandheldGPU);
         ConfigItems.push_back(HandheldGPU);
 
-        ClkConfigListItem *HandheldMEM = new ClkConfigListItem("Handheld MEM Clock", MEMClocks, "handheld_mem");
+        ClkConfigListItem *HandheldMEM = new ClkConfigListItem("掌机模式内存时钟", MEMClocks, "handheld_mem");
         clkList->addItem(HandheldMEM);
         ConfigItems.push_back(HandheldMEM);
 
