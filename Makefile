@@ -45,6 +45,10 @@ SOURCES		:=	source source/Elements source/Utils
 DATA		:=	data
 INCLUDES	:=	include include/Elements include/Utils libs/libtesla/include
 
+ifeq ($(RELEASE),)
+	APP_VERSION	:=	$(APP_VERSION)-$(shell git describe --dirty --always)
+endif
+
 NO_ICON		:=  1
 
 #---------------------------------------------------------------------------------
@@ -55,7 +59,7 @@ ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__ -DVERSION=\"v$(APP_VERSION)\"
 
 CXXFLAGS	:= $(CFLAGS) -fno-exceptions -std=c++17
 

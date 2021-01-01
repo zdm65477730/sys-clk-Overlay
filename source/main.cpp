@@ -3,6 +3,7 @@
 
 tsl::elm::ToggleListItem *ToggleClkItem;
 std::vector<ClkConfigListItem *> ConfigItems;
+std::string execPath;
 
 class GuiMain : public tsl::Gui
 {
@@ -105,5 +106,21 @@ public:
 
 int main(int argc, char **argv)
 {
+    FsFileSystem fs;
+    Result rc = fsOpenSdCardFileSystem(&fs);
+    if (R_FAILED(rc))
+        return -1;
+
+    execPath = std::string("sdmc:") + amsContentsPath + std::string("/00FF0000636C6BFF");
+    FsDir contentDir;
+    rc = fsFsOpenDirectory(&fs, amsContentsPath, FsDirOpenMode_ReadDirs, &contentDir);
+    if (R_FAILED(rc)) {
+        rc = fsFsOpenDirectory(&fs, sxosTitlesPath, FsDirOpenMode_ReadDirs, &contentDir);
+        if (R_FAILED(rc))
+            return -2;
+        // sdmc:/atmosphere/contents/00FF0000636C6BFF or sdmc:/sxos/titles/00FF0000636C6BFF
+        execPath = std::string("sdmc:") + sxosTitlesPath +  std::string("/00FF0000636C6BFF");
+    }
+
     return tsl::loop<SysClkOverlay>(argc, argv);
 }

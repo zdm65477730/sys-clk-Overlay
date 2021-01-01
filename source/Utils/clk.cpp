@@ -1,10 +1,14 @@
 #include <clk.h>
 
+extern std::string execPath;
+
 namespace Utils::clk
 {
     void ToggleClkModule(bool toggleState)
     {
         tsl::hlp::doWithSDCardHandle([toggleState] {
+            std::string flagDir{execPath + "/flags"};
+            std::string boot2Flag{flagDir + "/boot2.flag"};
             if (toggleState)
             {
                 NcmProgramLocation programLocation{
@@ -14,15 +18,15 @@ namespace Utils::clk
                 u64 pid;
                 if (R_SUCCEEDED(pmshellLaunchProgram(0, &programLocation, &pid)))
                 {
-                    mkdir(FLAGSDIR, 0777);
-                    fclose(fopen(BOOT2FLAG, "w"));
+                    mkdir(flagDir.c_str(), 0777);
+                    fclose(fopen(boot2Flag.c_str(), "w"));
                 }
             }
             else
             {
                 if (R_SUCCEEDED(pmshellTerminateProgram(sysClkTid)))
                 {
-                    remove(BOOT2FLAG);
+                    remove(boot2Flag.c_str());
                 }
             }
         });
@@ -43,17 +47,17 @@ namespace Utils::clk
             std::string selectedValue = item->getValues().at(item->getCurValue());
             simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
 
-            simpleIniParser::IniSection *section = config->findSection(buff, false);
+            simpleIniParser::IniSection *section = config->findSection(buff);
             if (section == nullptr)
             {
-                section = new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, buff);
+                section = new simpleIniParser::IniSection(simpleIniParser::IniSectionType::SECTION, buff);
                 config->sections.push_back(section);
             }
 
             if (section->findFirstOption(configName) == nullptr)
             {
                 if (selectedValue != "0")
-                    section->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, configName, selectedValue));
+                    section->options.push_back(new simpleIniParser::IniOption(configName, selectedValue));
             }
             else
             {
@@ -63,8 +67,8 @@ namespace Utils::clk
                     section->options.erase(findIT(section->options, section->findFirstOption(configName)));
             }
 
-            if (section->findFirstOption(programName, false, simpleIniParser::IniOptionType::SemicolonComment, simpleIniParser::IniOptionSearchField::Value) == nullptr)
-                section->options.insert(section->options.begin(), new simpleIniParser::IniOption(simpleIniParser::IniOptionType::SemicolonComment, "", programName));
+            if (section->findFirstOption(programName) == nullptr)
+                section->options.insert(section->options.begin(), new simpleIniParser::IniOption("", programName));
 
             config->writeToFile(CONFIG_INI);
             delete config;
@@ -81,7 +85,7 @@ namespace Utils::clk
             ss << 0 << std::hex << std::uppercase << programId;
             std::string buff = ss.str();
             simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
-            simpleIniParser::IniSection *section = config->findSection(buff, false);
+            simpleIniParser::IniSection *section = config->findSection(buff);
 
             if (section != nullptr)
             {
@@ -116,7 +120,8 @@ namespace Utils::clk
             else
                 clkState = ClkState::Disabled;
 
-            if (!std::filesystem::exists(PROGRAMDIR))
+            std::string programDir{execPath + "/exefs.nsp"};
+            if (!std::filesystem::exists(programDir.c_str()))
                 clkState = ClkState::NotFound;
         });
         return clkState;

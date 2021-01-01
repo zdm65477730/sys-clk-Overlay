@@ -8,12 +8,11 @@
 #include "../Elements/ClkConfigListItem.h"
 #include <fstream>
 
-#define CONTENTSDIR "sdmc:/atmosphere/contents/00FF0000636C6BFF"
 #define CONFIGDIR "sdmc:/config/sys-clk"
 #define CONFIG_INI CONFIGDIR "/config.ini"
-#define FLAGSDIR CONTENTSDIR "/flags"
-#define BOOT2FLAG FLAGSDIR "/boot2.flag"
-#define PROGRAMDIR CONTENTSDIR "/exefs.nsp"
+
+constexpr const char *const amsContentsPath = "/atmosphere/contents";
+constexpr const char *const sxosTitlesPath = "/sxos/titles";
 
 constexpr u64 sysClkTid = 0x00FF0000636C6BFFULL;
 
