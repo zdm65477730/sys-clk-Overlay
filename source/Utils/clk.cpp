@@ -45,7 +45,11 @@ namespace Utils::clk
 
             std::string configName = item->getConfigName();
             std::string selectedValue = item->getValues().at(item->getCurValue());
-            simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
+
+            FsFileSystem fs;
+            if (R_FAILED(fsOpenSdCardFileSystem(&fs))) return -1;
+
+            simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(&fs, CONFIG_INI);
 
             simpleIniParser::IniSection *section = config->findSection(buff);
             if (section == nullptr)
@@ -70,7 +74,10 @@ namespace Utils::clk
             if (section->findFirstOption(programName) == nullptr)
                 section->options.insert(section->options.begin(), new simpleIniParser::IniOption("", programName));
 
-            config->writeToFile(CONFIG_INI);
+            if (R_FAILED(fsOpenSdCardFileSystem(&fs))) return -1;
+            config->writeToFile(&fs, CONFIG_INI);
+
+            fsFsClose(&fs);
             delete config;
         });
     }
@@ -84,7 +91,12 @@ namespace Utils::clk
             std::stringstream ss;
             ss << 0 << std::hex << std::uppercase << programId;
             std::string buff = ss.str();
-            simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
+
+            FsFileSystem fs;
+            if (R_FAILED(fsOpenSdCardFileSystem(&fs))) return -1;
+            simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(&fs, CONFIG_INI);
+            fsFsClose(&fs);
+    
             simpleIniParser::IniSection *section = config->findSection(buff);
 
             if (section != nullptr)
