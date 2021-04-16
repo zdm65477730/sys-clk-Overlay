@@ -74,7 +74,6 @@ namespace Utils::clk
             if (section->findFirstOption(programName) == nullptr)
                 section->options.insert(section->options.begin(), new simpleIniParser::IniOption("", programName));
 
-            if (R_FAILED(fsOpenSdCardFileSystem(&fs))) return -1;
             config->writeToFile(&fs, CONFIG_INI);
 
             fsFsClose(&fs);
